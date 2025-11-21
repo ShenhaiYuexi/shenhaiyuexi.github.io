@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Shenhai Xinghe OS 激活</title>
+    <style>
+        :root {
+            --shenhai-bg: #e0f7ff; /* 浅雾蓝（浅色模式） */
+            --shenhai-bg-dark: #1a202c; /* 深色模式背景 */
+            --shenhai-accent: #4da6ff;
+            --shenhai-accent-dark: #3a7bc8;
+            --shenhai-text: #000000; /* 浅色模式文字 */
+            --shenhai-text-dark: #ffffff; /* 深色模式文字 */
+            --shenhai-gray: #666666;
+            --shenhai-gray-dark: #d1d5db;
+            --shenhai-light-gray: #d2d2d7;
+            --shenhai-light-gray-dark: #374151;
+            --shenhai-border: #e0e0e0;
+            --shenhai-border-dark: #374151;
+            --shenhai-card-bg: rgba(255, 255, 255, 0.9); /* 浅色卡片 */
+            --shenhai-card-bg-dark: rgba(31, 41, 55, 0.9); /* 深色卡片 */
+            --shenhai-glass-bg: rgba(255, 255, 255, 0.25);
+            --shenhai-glass-bg-dark: rgba(31, 41, 55, 0.8);
+            --shenhai-transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --shenhai-blur: blur(20px);
+            --shenhai-radius: 24px;
+            --shenhai-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            --font-size-base: 16px; /* 字体大小基准 */
+            --font-weight-base: 400; /* 字体粗细基准 */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-base);
+        }
+        
+        body {
+            background: var(--shenhai-bg);
+            height: 100vh;
+            overflow: hidden;
+            color: var(--shenhai-text);
+            transition: background 0.5s, color 0.5s;
+        }
+        
+        /* 深色模式适配 */
+        body.dark-mode {
+            background: var(--shenhai-bg-dark);
+            color: var(--shenhai-text-dark);
+        }
+        
+        .activation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 页面通用样式 */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(100%);
+            transition: var(--shenhai-transition);
+            z-index: 1;
+            background: inherit;
+        }
+        
+        .page.active {
+            transform: translateX(0);
+            z-index: 2;
+        }
+        
+        /* 步骤提示（顶部） */
+        .step-indicator {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .step-text {
+            font-size: 14px;
+            color: var(--shenhai-gray);
+        }
+        
+        body.dark-mode .step-text {
+            color: var(--shenhai-gray-dark);
+        }
+        
+        .step-progress {
+            width: 60%;
+            height: 3px;
+            background: var(--shenhai-light-gray);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        body.dark-mode .step-progress {
+            background: var(--shenhai-light-gray-dark);
+        }
+        
+        .step-progress-fill {
+            height: 100%;
+            background: var(--shenhai-accent);
+            width: 0;
+            transition: width 0.8s ease;
+            border-radius: 2px;
+        }
+        
+        /* 1. 初始Hello页 */
+        .hello-page {
+            justify-content: center;
+            text-align: center;
+            color: var(--shenhai-accent-dark);
+        }
+        
+        .hello-container {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            margin-bottom: 120px;
+        }
+        
+        .hello-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 52px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            color: var(--shenhai-accent-dark);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        
+        body.dark-mode .hello-text {
+            color: var(--shenhai-accent);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .hello-text.active {
+            opacity: 1;
+        }
+        
+        .start-btn {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--shenhai-glass-bg);
+            backdrop-filter: var(--shenhai-blur);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--shenhai-accent-dark);
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: var(--shenhai-shadow);
+            animation: breath 3s infinite ease-in-out;
+            transition: var(--shenhai-transition);
+        }
+        
+        /* 小箭头单独左右弹跳动画 */
+        .start-btn span {
+            display: inline-block;
+            animation: arrowBounce 1s infinite alternate;
+        }
+        
+        @keyframes arrowBounce {
+            0% { transform: translateX(-5px); }
+            100% { transform: translateX(5px); }
+        }
+        
+        body.dark-mode .start-btn {
+            background: var(--shenhai-glass-bg-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--shenhai-accent);
+        }
+        
+        .start-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        body.dark-mode .start-btn:hover {
+            background: rgba(55, 65, 81, 0.8);
+        }
+        
+        @keyframes breath {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.08); }
+        }
+        
+        /* 页面标题 */
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--shenhai-accent-dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        body.dark-mode .page-title {
+            color: var(--shenhai-accent);
+        }
+        
+        .page-subtitle {
+            font-size: 18px;
+            color: var(--shenhai-gray);
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.6;
+            max-width: 300px;
+        }
+        
+        body.dark-mode .page-subtitle {
+            color: var(--shenhai-gray-dark);
+        }
+        
+        /* 选项列表 */
+        .option-list {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+        
+        .option-item {
+            width: 100%;
+            padding: 20px 24px;
+            background: var(--shenhai-card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--shenhai-border);
+            font-size: 18px;
+            color: var(--shenhai-text);
+            text-align: left;
+            cursor: pointer;
+            transition: var(--shenhai-transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        body.dark-mode .option-item {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            color: var(--shenhai-text-dark);
+        }
+        
+        .option-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        body.dark-mode .option-item:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .option-item:active {
+            transform: scale(0.98);
+        }
+        
+        .option-item.selected {
+            border-color: var(--shenhai-accent);
+            background: rgba(77, 166, 255, 0.05);
+        }
+        
+        body.dark-mode .option-item.selected {
+            background: rgba(77, 166, 255, 0.1);
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            width: 100%;
+            max-width: 400px;
+            padding: 18px;
+            border-radius: 28px;
+            border: none;
+            background: var(--shenhai-accent);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--shenhai-transition);
+            margin-bottom: 16px;
+        }
+        
+        .btn:disabled {
+            background: var(--shenhai-light-gray);
+            color: var(--shenhai-gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        body.dark-mode .btn:disabled {
+            background: var(--shenhai-light-gray-dark);
+            color: var(--shenhai-gray-dark);
+        }
+        
+        .btn:hover {
+            background: var(--shenhai-accent-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(77, 166, 255, 0.3);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--shenhai-accent);
+            color: var(--shenhai-accent);
+        }
+        
+        body.dark-mode .btn-outline {
+            color: var(--shenhai-accent);
+            border: 1px solid var(--shenhai-accent);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(77, 166, 255, 0.1);
+        }
+        
+        body.dark-mode .btn-outline:hover {
+            background: rgba(77, 166, 255, 0.2);
+        }
+        
+        /* 表单元素 */
+        .form-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 18px 20px;
+            border-radius: 18px;
+            border: 1px solid var(--shenhai-border);
+            font-size: 18px;
+            margin-bottom: 20px;
+            background: var(--shenhai-card-bg);
+            transition: var(--shenhai-transition);
+            color: var(--shenhai-text);
+        }
+        
+        body.dark-mode .form-input {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            color: var(--shenhai-text-dark);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--shenhai-accent);
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.2);
+        }
+        
+        body.dark-mode .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.3);
+        }
+        
+        /* 开关组件 */
+        .switch-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--shenhai-border);
+        }
+        
+        body.dark-mode .switch-container {
+            border-bottom: 1px solid var(--shenhai-border-dark);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 32px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--shenhai-light-gray);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        body.dark-mode .slider {
+            background-color: var(--shenhai-light-gray-dark);
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--shenhai-accent);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        
+        /* 更新进度条 */
+        .update-progress {
+            width: 100%;
+            max-width: 400px;
+            height: 6px;
+            background: var(--shenhai-light-gray);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0 40px;
+        }
+        
+        body.dark-mode .update-progress {
+            background: var(--shenhai-light-gray-dark);
+        }
+        
+        .update-fill {
+            height: 100%;
+            background: var(--shenhai-accent);
+            width: 0;
+            transition: width 0.15s linear;
+            border-radius: 3px;
+        }
+        
+        /* 选项网格 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 40px;
+        }
+        
+        .option-card {
+            padding: 20px 12px;
+            text-align: center;
+            font-size: 16px;
+            border: 1px solid var(--shenhai-border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--shenhai-transition);
+            background: var(--shenhai-card-bg);
+        }
+        
+        body.dark-mode .option-card {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            color: var(--shenhai-text-dark);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        body.dark-mode .option-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .option-card.active {
+            border-color: var(--shenhai-accent);
+            background: rgba(77, 166, 255, 0.1);
+        }
+        
+        body.dark-mode .option-card.active {
+            background: rgba(77, 166, 255, 0.2);
+        }
+        
+        /* 生物识别设置 */
+        .biometric-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .biometric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 24px;
+            border-radius: 20px;
+            background: var(--shenhai-card-bg);
+            border: 1px solid var(--shenhai-border);
+            box-shadow: var(--shenhai-shadow);
+        }
+        
+        body.dark-mode .biometric-item {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .biometric-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(77, 166, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--shenhai-accent);
+            cursor: pointer;
+            transition: var(--shenhai-transition);
+        }
+        
+        body.dark-mode .biometric-icon {
+            background: rgba(77, 166, 255, 0.2);
+        }
+        
+        .biometric-icon:hover {
+            background: rgba(77, 166, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        body.dark-mode .biometric-icon:hover {
+            background: rgba(77, 166, 255, 0.3);
+        }
+        
+        .biometric-icon.active {
+            background: var(--shenhai-accent);
+            color: white;
+            box-shadow: 0 0 20px rgba(77, 166, 255, 0.5);
+        }
+        
+        .biometric-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(77, 166, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        body.dark-mode .biometric-progress {
+            background: rgba(77, 166, 255, 0.3);
+        }
+        
+        .biometric-progress-bar {
+            height: 100%;
+            background: var(--shenhai-accent);
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 4px;
+        }
+        
+        .biometric-status {
+            font-size: 16px;
+            color: var(--shenhai-accent);
+            font-weight: 600;
+        }
+        
+        /* 法律条款大容器 */
+        .terms-container {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            padding: 28px;
+            border-radius: var(--shenhai-radius);
+            background: var(--shenhai-card-bg);
+            border: 1px solid var(--shenhai-border);
+            margin-bottom: 20px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--shenhai-accent) transparent;
+            box-shadow: var(--shenhai-shadow);
+        }
+        
+        body.dark-mode .terms-container {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .terms-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .terms-container::-webkit-scrollbar-thumb {
+            background: var(--shenhai-accent);
+            border-radius: 2px;
+        }
+        
+        .terms-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--shenhai-accent-dark);
+        }
+        
+        body.dark-mode .terms-title {
+            color: var(--shenhai-accent);
+        }
+        
+        .terms-desc {
+            font-size: 16px;
+            color: var(--shenhai-gray);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        
+        body.dark-mode .terms-desc {
+            color: var(--shenhai-gray-dark);
+        }
+        
+        /* 激活完成页面 */
+        .completion-page {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .completion-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .completion-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #000000; /* 强制黑色 */
+        }
+        
+        body.dark-mode .completion-title {
+            color: #ffffff;
+        }
+        
+        .completion-subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 300px;
+            line-height: 1.4;
+            color: #000000; /* 强制黑色 */
+        }
+        
+        body.dark-mode .completion-subtitle {
+            color: #ffffff;
+        }
+        
+        /* 法律条款勾选框样式 */
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 30px;
+            cursor: pointer;
+            padding: 16px;
+            border-radius: 12px;
+            transition: var(--shenhai-transition);
+            background: var(--shenhai-card-bg);
+            box-shadow: var(--shenhai-shadow);
+        }
+        
+        body.dark-mode .terms-checkbox {
+            background: var(--shenhai-card-bg-dark);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .terms-checkbox:hover {
+            background: rgba(77, 166, 255, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        body.dark-mode .terms-checkbox:hover {
+            background: rgba(77, 166, 255, 0.1);
+        }
+        
+        .checkbox-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--shenhai-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--shenhai-transition);
+        }
+        
+        body.dark-mode .checkbox-icon {
+            border: 2px solid var(--shenhai-border-dark);
+        }
+        
+        .checkbox-icon.checked {
+            background: var(--shenhai-accent);
+            border-color: var(--shenhai-accent);
+        }
+        
+        .checkbox-icon.checked::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* eSIM动画页面 */
+        .esim-animation-page {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .esim-animation {
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .esim-card {
+            width: 150px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--shenhai-accent) 0%, var(--shenhai-accent-dark) 100%);
+            border-radius: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: cardFloat 3s infinite ease-in-out;
+        }
+        
+        @keyframes cardFloat {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+            50% { transform: translate(-50%, -50%) translateY(-10px); }
+        }
+        
+        .esim-signal {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: var(--shenhai-accent);
+            animation: blink 1s infinite alternate;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .skip-animation-btn {
+            position: absolute;
+            bottom: 40px;
+            right: 24px;
+            padding: 8px 16px;
+            background: var(--shenhai-glass-bg);
+            backdrop-filter: var(--shenhai-blur);
+            border: none;
+            border-radius: 20px;
+            color: var(--shenhai-text);
+            cursor: pointer;
+        }
+        
+        body.dark-mode .skip-animation-btn {
+            background: var(--shenhai-glass-bg-dark);
+            color: var(--shenhai-text-dark);
+        }
+        
+        /* Shenhai保障页面 */
+        .safety-page {
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+        
+        .safety-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            border-radius: var(--shenhai-radius);
+            background: var(--shenhai-card-bg);
+            border: 1px solid var(--shenhai-border);
+            margin-bottom: 20px;
+            box-shadow: var(--shenhai-shadow);
+        }
+        
+        body.dark-mode .safety-card {
+            background: var(--shenhai-card-bg-dark);
+            border: 1px solid var(--shenhai-border-dark);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .safety-icon {
+            font-size: 28px;
+            color: var(--shenhai-accent);
+            margin-bottom: 16px;
+        }
+        
+        .safety-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--shenhai-accent-dark);
+        }
+        
+        body.dark-mode .safety-title {
+            color: var(--shenhai-accent);
+        }
+        
+        .safety-desc {
+            font-size: 16px;
+            color: var(--shenhai-gray);
+            line-height: 1.6;
+        }
+        
+        body.dark-mode .safety-desc {
+            color: var(--shenhai-gray-dark);
+        }
+        
+        /* 数据传输动画页 */
+        .transfer-animation-page {
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .transfer-animation {
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .transfer-device {
+            width: 80px;
+            height: 120px;
+            background: var(--shenhai-card-bg);
+            border: 2px solid var(--shenhai-accent);
+            border-radius: 16px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .transfer-device.left {
+            left: 20px;
+        }
+        
+        .transfer-device.right {
+            right: 20px;
+        }
+        
+        .transfer-cable {
+            position: absolute;
+            top: 60px;
+            left: 100px;
+            width: 100px;
+            height: 4px;
+            background: var(--shenhai-accent);
+            z-index: -1;
+        }
+        
+        .transfer-dot {
+            position: absolute;
+            top: 58px;
+            left: 100px;
+            width: 8px;
+            height: 8px;
+            background: var(--shenhai-accent);
+            border-radius: 50%;
+            animation: transferMove 2s infinite linear;
+        }
+        
+        @keyframes transferMove {
+            0% { left: 100px; }
+            50% { left: 190px; }
+            100% { left: 100px; }
+        }
+        
+        /* 系统更新转圈动画 */
+        .update-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid var(--shenhai-light-gray);
+            border-top: 6px solid var(--shenhai-accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 黑屏过渡页 */
+        .black-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="activation-container">
+        <!-- 黑屏过渡层 -->
+        <div class="black-screen" id="blackScreen"></div>
+
+        <!-- 1. 初始Hello页 -->
+        <div class="page hello-page" id="pageHello">
+            <div class="hello-container">
+                <div class="hello-text active">Hello</div>
+                <div class="hello-text">你好</div>
+                <div class="hello-text">こんにちは</div>
+                <div class="hello-text">Bonjour</div>
+                <div class="hello-text">Hola</div>
+                <div class="hello-text">안녕하세요</div>
+            </div>
+            <div class="start-btn" onclick="goToPage('pageLang')"><span>→</span></div>
+        </div>
+
+        <!-- 2. 语言选择页 -->
+        <div class="page" id="pageLang">
+            <div class="step-indicator">
+                <div class="step-text">步骤 1 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 7%;"></div>
+                </div>
+            </div>
+            <div class="page-title">选择语言</div>
+            <div class="page-subtitle">选择设备显示语言</div>
+            <div class="option-list">
+                <div class="option-item" onclick="selectOption(this, 'language', '简体中文')">
+                    简体中文
+                    <span>🇨🇳</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'language', 'English')">
+                    English
+                    <span>🇺🇸</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'language', '日本語')">
+                    日本語
+                    <span>🇯🇵</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'language', '한국어')">
+                    한국어
+                    <span>🇰🇷</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'language', 'Français')">
+                    Français
+                    <span>🇫🇷</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'language', 'Deutsch')">
+                    Deutsch
+                    <span>🇩🇪</span>
+                </div>
+            </div>
+            <button class="btn" id="langBtn" disabled onclick="goToPage('pageRegion')">继续</button>
+        </div>
+
+        <!-- 3. 地区选择页 -->
+        <div class="page" id="pageRegion">
+            <div class="step-indicator">
+                <div class="step-text">步骤 2 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 13%;"></div>
+                </div>
+            </div>
+            <div class="page-title">选择国家或地区</div>
+            <div class="page-subtitle">选择您所在的国家或地区</div>
+            <div class="option-list">
+                <div class="option-item" onclick="selectOption(this, 'region', '中国')">
+                    中国
+                    <span>🇨🇳</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'region', '美国')">
+                    United States
+                    <span>🇺🇸</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'region', '日本')">
+                    日本
+                    <span>🇯🇵</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'region', '韩国')">
+                    South Korea
+                    <span>🇰🇷</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'region', '德国')">
+                    Germany
+                    <span>🇩🇪</span>
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'region', '法国')">
+                    France
+                    <span>🇫🇷</span>
+                </div>
+            </div>
+            <button class="btn" id="regionBtn" disabled onclick="goToPage('pageAge')">继续</button>
+        </div>
+
+        <!-- 4. 年龄设置页 -->
+        <div class="page" id="pageAge">
+            <div class="step-indicator">
+                <div class="step-text">步骤 3 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 20%;"></div>
+                </div>
+            </div>
+            <div class="page-title">选择年龄段</div>
+            <div class="page-subtitle">帮助我们提供更合适的服务</div>
+            <div class="option-list">
+                <div class="option-item" onclick="selectOption(this, 'age', 'under18')">
+                    18岁以下
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'age', '18-65')">
+                    18-65岁
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'age', 'over65')">
+                    65岁以上
+                </div>
+            </div>
+            <button class="btn" id="ageBtn" disabled onclick="handleAgeJump()">继续</button>
+        </div>
+
+        <!-- 5. 未成年人家长验证页 -->
+        <div class="page" id="pageParentVerify">
+            <div class="step-indicator">
+                <div class="step-text">步骤 4 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 27%;"></div>
+                </div>
+            </div>
+            <div class="page-title"><span style="font-size: 28px;">🤔</span></div>
+            <div class="page-subtitle">同学 所以说你是第一次可能玩手机，但也有可能你玩的手机次数过多 虽然我不知道这是怎么一回事 但是我希望让你的父母来进行操作激活 来作为介质而帮你一把</div>
+            <button class="btn" onclick="goToPage('pageParentInfo')">我是父母</button>
+        </div>
+
+        <!-- 6. 家长信息填写页 -->
+        <div class="page" id="pageParentInfo">
+            <div class="step-indicator">
+                <div class="step-text">步骤 5 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 33%;"></div>
+                </div>
+            </div>
+            <div class="page-title">填写孩子信息</div>
+            <div class="page-subtitle">完成验证以继续激活</div>
+            <input type="text" class="form-input" placeholder="孩子年龄" id="childAge">
+            <input type="text" class="form-input" placeholder="孩子生日（如：2010-01-01）" id="childBirthday">
+            <div style="font-size: 14px; color: var(--shenhai-gray); margin-bottom: 10px; text-align: left; width: 100%; max-width: 400px;">
+                请在另一设备下载“深海家庭APP”，输入配对码：56338
+            </div>
+            <input type="text" class="form-input" placeholder="输入配对码" id="pairCode" value="56338">
+            <button class="btn" id="parentInfoBtn" onclick="verifyParentInfo()">确认信息</button>
+        </div>
+
+        <!-- 7. 法律条款页（大框滚动） -->
+        <div class="page" id="pageTerms">
+            <div class="step-indicator">
+                <div class="step-text">步骤 6 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 40%;"></div>
+                </div>
+            </div>
+            <div class="page-title">法律条款</div>
+            <div class="page-subtitle">请阅读并同意以下条款</div>
+            
+            <div class="terms-container">
+                <div class="terms-title">用户许可协议</div>
+                <div class="terms-desc">
+                    授予你使用Shenhai Xinghe OS设备及系统的非独占许可，你同意仅用于合法用途，不得擅自修改系统核心代码，不得用于侵犯第三方权益的行为。
+                    你理解并同意，Shenhai有权在必要时对系统进行更新、维护，部分功能可能因地区限制无法使用。
+                </div>
+                
+                <div class="terms-title">隐私政策条款</div>
+                <div class="terms-desc">
+                    我们仅收集必要的设备信息用于提供服务，不会泄露你的个人敏感信息，你可随时在设置中关闭数据收集。
+                    收集的信息包括但不限于设备型号、系统版本、网络状态等非个人标识信息，用于优化系统性能。
+                </div>
+                
+                <div class="terms-title">数据使用声明</div>
+                <div class="terms-desc">
+                    你的数据仅用于提供基础功能、优化系统性能，不会出售给第三方，仅在法律要求时披露。
+                    你可以通过系统设置查看、导出或删除你的个人数据，我们将在你账号注销后30天内删除你的所有数据。
+                </div>
+            </div>
+            
+            <div class="terms-checkbox" onclick="toggleTermsCheckbox()">
+                <div class="checkbox-icon" id="termsCheckbox"></div>
+                <div>我已阅读并同意所有条款</div>
+            </div>
+            
+            <button class="btn" id="termsBtn" disabled onclick="goToPage('pageBiometric')">同意并继续</button>
+        </div>
+
+        <!-- 8. 安全设置页（密码+指纹） -->
+        <div class="page" id="pageBiometric">
+            <div class="step-indicator">
+                <div class="step-text">步骤 7 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 47%;"></div>
+                </div>
+            </div>
+            <div class="page-title">安全设置</div>
+            <div class="page-subtitle">设置密码与指纹，保护您的设备安全</div>
+            
+            <div class="biometric-container">
+                <!-- 密码设置模块 -->
+                <div class="biometric-item">
+                    <div class="biometric-icon" onclick="setupPassword()">🔒</div>
+                    <div>密码设置</div>
+                    <div class="biometric-status" id="passwordStatus">未设置</div>
+                    <input type="password" class="form-input" id="passwordInput" placeholder="输入6位及以上密码" style="display: none;">
+                    <input type="password" class="form-input" id="passwordConfirm" placeholder="确认密码" style="display: none;">
+                    <button class="btn" id="passwordBtn" style="display: none;" onclick="confirmPassword()">确认密码</button>
+                </div>
+                
+                <!-- 指纹模块（默认隐藏） -->
+                <div class="biometric-item" id="fingerprintItem" style="display: none;">
+                    <div class="biometric-icon" onclick="setupFingerprint()">○</div>
+                    <div>超声波指纹</div>
+                    <div class="biometric-status" id="fingerprintStatus">未设置</div>
+                    <div class="biometric-progress">
+                        <div class="biometric-progress-bar" id="fingerprintProgress"></div>
+                    </div>
+                    <div style="font-size: 14px; color: var(--shenhai-gray);">请点击5次完成录入</div>
+                </div>
+            </div>
+            <button class="btn btn-outline" onclick="skipPassword()">跳过密码设置</button>
+        </div>
+
+        <!-- 9. WiFi选择页 -->
+        <div class="page" id="pageWiFi">
+            <div class="step-indicator">
+                <div class="step-text">步骤 8 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 53%;"></div>
+                </div>
+            </div>
+            <div class="page-title">选取Wi-Fi网络</div>
+            <div class="page-subtitle">连接到Shenhai Yuexi网络或选择不使用Wi-Fi</div>
+            <div class="option-list">
+                <div class="option-item" onclick="showWiFiPassword()">
+                    Shenhai Yuexi <span>🔒</span>
+                </div>
+                <div class="option-item" onclick="skipWiFi()">不使用Wi-Fi</div>
+            </div>
+            <div id="wifiPassword" style="width: 100%; max-width: 400px; display: none;">
+                <input type="text" class="form-input" placeholder="输入密码" value="20230612">
+                <button class="btn" onclick="connectWiFi()">加入</button>
+            </div>
+        </div>
+
+        <!-- 10. 深海研究室页 -->
+        <div class="page" id="pageDeepsea">
+            <div class="step-indicator">
+                <div class="step-text">步骤 9 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 60%;"></div>
+                </div>
+            </div>
+            <div class="page-title">深海研究室</div>
+            <div class="page-subtitle">Shenhai Xinghe OS服务器最终所在地</div>
+            
+            <div class="safety-card">
+                <div class="safety-icon">🚀</div>
+                <div class="safety-title">深海最高运营系统</div>
+                <div class="safety-desc">
+                    加入深海研究室后，您的反馈问题将直接提交至星河服务器，并由深海系统运营部门进行24小时无限制管辖。我们承诺在15小时内完成Bug修复并推送新版本。
+                </div>
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card active" onclick="selectCard(this, 'deepsea', '已加入')">
+                    <div style="font-size: 24px; margin-bottom: 8px;">🚀</div>
+                    <div>加入深海研究室</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'deepsea', '未加入')">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⏱️</div>
+                    <div>暂不加入</div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="goToPage('pageSoftwareUpdate')">继续</button>
+        </div>
+
+        <!-- 11. 软件更新页 -->
+        <div class="page" id="pageSoftwareUpdate">
+            <div class="step-indicator">
+                <div class="step-text">步骤 10 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 67%;"></div>
+                </div>
+            </div>
+            <div class="page-title">系统更新</div>
+            <div class="page-subtitle">我们正在尝试更新您的OS版本</div>
+            
+            <div class="update-spinner"></div>
+            <div style="font-size: 16px; color: var(--shenhai-gray); text-align: center; margin-bottom: 40px; line-height: 1.6;">
+                更新完过后，绝如流畅 重回本色<br>这可能需要一点小分 但绝对不可能会耗时
+            </div>
+            
+            <button class="btn" onclick="startUpdate()">现在更新</button>
+            <button class="btn btn-outline" onclick="goToPage('pageDataTransfer')">稍后更新</button>
+        </div>
+
+        <!-- 12. 数据传输选择页 -->
+        <div class="page" id="pageDataTransfer">
+            <div class="step-indicator">
+                <div class="step-text">步骤 11 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 73%;"></div>
+                </div>
+            </div>
+            <div class="page-title">是否传输数据</div>
+            <div class="page-subtitle">从其他设备迁移数据至新设备</div>
+            <div class="option-list">
+                <div class="option-item" onclick="selectOption(this, 'transfer', 'ios')">
+                    从iOS传输
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'transfer', 'android')">
+                    从安卓传输
+                </div>
+                <div class="option-item" onclick="selectOption(this, 'transfer', 'none')">
+                    不传输数据
+                </div>
+            </div>
+            <button class="btn" id="transferBtn" disabled onclick="handleDataTransfer()">继续</button>
+        </div>
+
+        <!-- 13. 数据传输动画页 -->
+        <div class="page transfer-animation-page" id="pageTransferAnimation">
+            <div class="step-indicator">
+                <div class="step-text">步骤 12 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 80%;"></div>
+                </div>
+            </div>
+            <div class="page-title">正在传输数据</div>
+            <div class="page-subtitle">请保持设备连接</div>
+            
+            <div class="transfer-animation">
+                <div class="transfer-device left"></div>
+                <div class="transfer-device right"></div>
+                <div class="transfer-cable"></div>
+                <div class="transfer-dot"></div>
+            </div>
+            
+            <div style="font-size: 14px; color: var(--shenhai-gray); margin-bottom: 20px;">
+                需拿双C口USB电缆连接两台设备
+            </div>
+            
+            <button class="skip-animation-btn" onclick="goToPage('pageWelcome')">跳过动画</button>
+        </div>
+
+        <!-- 14. 个性化欢迎页 -->
+        <div class="page" id="pageWelcome">
+            <div class="step-indicator">
+                <div class="step-text">步骤 13 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 87%;"></div>
+                </div>
+            </div>
+            <div class="page-title">欢迎加入星河生态</div>
+            <div class="page-subtitle" id="welcomeText">欢迎使用Shenhai Xinghe OS</div>
+            
+            <button class="btn" onclick="goToPage('pagePersonalize')">继续</button>
+        </div>
+
+        <!-- 15. 个性化设置页（字体/主题） -->
+        <div class="page" id="pagePersonalize">
+            <div class="step-indicator">
+                <div class="step-text">步骤 14 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 93%;"></div>
+                </div>
+            </div>
+            <div class="page-title">个性化设置</div>
+            <div class="page-subtitle">自定义您的设备外观和体验</div>
+            
+            <div class="options-grid">
+                <div class="option-card active" onclick="selectCard(this, 'theme', '浅色')">
+                    <div style="font-size: 24px; margin-bottom: 8px;">☀️</div>
+                    <div>浅色主题</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'theme', '深色')">
+                    <div style="font-size: 24px; margin-bottom: 8px;">🌙</div>
+                    <div>深色主题</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'theme', '自动')">
+                    <div style="font-size: 24px; margin-bottom: 8px;">⚙️</div>
+                    <div>自动切换</div>
+                </div>
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card" onclick="selectCard(this, 'fontSize', '小')">
+                    <div style="font-size: 16px; margin-bottom: 8px;">小</div>
+                    <div>字体大小</div>
+                </div>
+                <div class="option-card active" onclick="selectCard(this, 'fontSize', '中')">
+                    <div style="font-size: 18px; margin-bottom: 8px;">中</div>
+                    <div>字体大小</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'fontSize', '大')">
+                    <div style="font-size: 20px; margin-bottom: 8px;">大</div>
+                    <div>字体大小</div>
+                </div>
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card active" onclick="selectCard(this, 'fontWeight', '常规')">
+                    <div style="font-weight: 400; margin-bottom: 8px;">常规</div>
+                    <div>字体粗细</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'fontWeight', '中等')">
+                    <div style="font-weight: 500; margin-bottom: 8px;">中等</div>
+                    <div>字体粗细</div>
+                </div>
+                <div class="option-card" onclick="selectCard(this, 'fontWeight', '加粗')">
+                    <div style="font-weight: 700; margin-bottom: 8px;">加粗</div>
+                    <div>字体粗细</div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="goToPage('pageAccount')">继续</button>
+        </div>
+
+        <!-- 16. 账户设置页 -->
+        <div class="page" id="pageAccount">
+            <div class="step-indicator">
+                <div class="step-text">步骤 15 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="page-title">Shenhai账户</div>
+            <div class="page-subtitle">登录或创建账户，同步数据和服务</div>
+            
+            <input type="text" class="form-input" placeholder="用户名/手机号" id="accountInput">
+            <input type="password" class="form-input" placeholder="密码" id="pwdInput">
+            
+            <button class="btn" onclick="login()">登录</button>
+            <button class="btn btn-outline" onclick="register()">创建账户</button>
+            <button class="btn btn-outline" onclick="developerLogin()">我是开发者</button>
+            <button class="btn btn-outline" onclick="goToPage('pageESIM')">跳过注册</button>
+        </div>
+
+        <!-- 17. eSIM激活页 -->
+        <div class="page" id="pageESIM">
+            <div class="step-indicator">
+                <div class="step-text">步骤 16 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="page-title">设置eSIM</div>
+            <div class="page-subtitle">激活您的Shenhai eSIM卡</div>
+            
+            <div class="safety-card">
+                <div class="safety-icon">📶</div>
+                <div class="safety-title">Shenhai eSIM 激活</div>
+                <div class="safety-desc">
+                    请输入您的PIN码激活eSIM卡。如果您忘记了PIN码，可以点击"忘记密码"获取默认密码。
+                </div>
+            </div>
+            
+            <input type="password" class="form-input" placeholder="输入PIN码 (默认: 661543)" id="pinInput">
+            <button class="btn btn-outline" onclick="document.getElementById('pinInput').value='661543'">忘记密码？</button>
+            <button class="btn" onclick="activateESIM()">激活 eSIM</button>
+            <button class="btn btn-outline" onclick="goToPage('pageSafety')">跳过</button>
+        </div>
+
+        <!-- 18. eSIM激活动画页 -->
+        <div class="page esim-animation-page" id="pageESIMAnimation">
+            <div class="page-title">eSIM激活中</div>
+            <div class="page-subtitle">正在配置您的移动网络</div>
+            
+            <div class="esim-animation">
+                <div class="esim-card"></div>
+                <div class="esim-signal">📶</div>
+            </div>
+            
+            <button class="skip-animation-btn" onclick="goToPage('pageSafety')">跳过动画</button>
+        </div>
+
+        <!-- 19. Shenhai保障页 -->
+        <div class="page safety-page" id="pageSafety">
+            <div class="step-indicator">
+                <div class="step-text">步骤 17 / 15</div>
+                <div class="step-progress">
+                    <div class="step-progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="page-title">Shenhai保障</div>
+            <div class="page-subtitle">您的设备安全与紧急服务</div>
+            
+            <div class="safety-card">
+                <div class="safety-icon">🆘</div>
+                <div class="safety-title">紧急联络</div>
+                <div class="safety-desc">
+                    连续按电源键5次可快速呼叫紧急联系人，并发送您的实时位置。
+                </div>
+            </div>
+            
+            <div class="safety-card">
+                <div class="safety-icon">🔒</div>
+                <div class="safety-title">安全检测</div>
+                <div class="safety-desc">
+                    系统将实时检测设备安全状态，发现风险时立即提醒并提供修复建议。
+                </div>
+            </div>
+            
+            <div class="safety-card">
+                <div class="safety-icon">📱</div>
+                <div class="safety-title">设备找回</div>
+                <div class="safety-desc">
+                    开启后可远程定位、锁定设备，防止数据泄露。
+                </div>
+            </div>
+            
+            <button class="btn" onclick="goToPage('pageCompletion')">完成设置</button>
+        </div>
+
+        <!-- 20. 激活完成页 -->
+        <div class="page completion-page" id="pageCompletion">
+            <div class="completion-icon">✨</div>
+            <div class="completion-title">激活完成</div>
+            <div class="completion-subtitle">您的设备已准备就绪，开始体验Shenhai Xinghe OS</div>
+            <button class="btn" style="background: var(--shenhai-glass-bg); border: 1px solid rgba(255, 255, 255, 0.5); color: var(--shenhai-text);" onclick="resetActivation()">重新激活</button>
+        </div>
+    </div>
+
+    <script>
+        // 全局配置对象
+        const config = {
+            language: null,
+            region: null,
+            age: null,
+            theme: '浅色',
+            fontSize: '中',
+            fontWeight: '常规',
+            deepsea: '已加入',
+            transfer: null,
+            biometric: {
+                password: false,
+                fingerprint: false
+            },
+            account: null
+        };
+
+        // 页面加载完成后强制激活初始页
+        window.onload = function() {
+            const pageHello = document.getElementById('pageHello');
+            pageHello.classList.add('active');
+            startHelloRotation();
+        };
+
+        // Hello文字轮播（修复：页面加载后自动启动）
+        const helloTexts = document.querySelectorAll('.hello-text');
+        let currentHelloIndex = 0;
+        function startHelloRotation() {
+            setInterval(() => {
+                helloTexts[currentHelloIndex].classList.remove('active');
+                currentHelloIndex = (currentHelloIndex + 1) % helloTexts.length;
+                helloTexts[currentHelloIndex].classList.add('active');
+            }, 2000);
+        }
+
+        // 页面跳转（修复：移除延迟，直接切换类）
+        function goToPage(targetPageId) {
+            const currentPage = document.querySelector('.page.active');
+            const targetPage = document.getElementById(targetPageId);
+            
+            if (!currentPage || !targetPage) return;
+            
+            currentPage.classList.remove('active');
+            targetPage.classList.add('active');
+        }
+
+        // 选项选择（修复：选择后启用按钮）
+        function selectOption(element, type, value) {
+            const options = element.parentElement.querySelectorAll('.option-item');
+            options.forEach(option => option.classList.remove('selected'));
+            element.classList.add('selected');
+            config[type] = value;
+
+            // 启用对应页面的继续按钮
+            if (type === 'language') {
+                document.getElementById('langBtn').disabled = false;
+            } else if (type === 'region') {
+                document.getElementById('regionBtn').disabled = false;
+            } else if (type === 'age') {
+                document.getElementById('ageBtn').disabled = false;
+            } else if (type === 'transfer') {
+                document.getElementById('transferBtn').disabled = false;
+            }
+        }
+
+        // 卡片选择（主题/字体/粗细）
+        function selectCard(element, type, value) {
+            const cards = element.parentElement.querySelectorAll('.option-card');
+            cards.forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+            config[type] = value;
+
+            // 主题切换
+            if (type === 'theme') {
+                const body = document.body;
+                if (value === '浅色' || value === '自动') {
+                    body.classList.remove('dark-mode');
+                    body.style.background = '#e0f7ff';
+                } else if (value === '深色') {
+                    body.classList.add('dark-mode');
+                    body.style.background = '#1a202c';
+                }
+            }
+
+            // 字体大小
+            if (type === 'fontSize') {
+                const root = document.documentElement;
+                if (value === '小') {
+                    root.style.setProperty('--font-size-base', '14px');
+                } else if (value === '中') {
+                    root.style.setProperty('--font-size-base', '16px');
+                } else if (value === '大') {
+                    root.style.setProperty('--font-size-base', '18px');
+                }
+            }
+
+            // 字体粗细
+            if (type === 'fontWeight') {
+                const root = document.documentElement;
+                if (value === '常规') {
+                    root.style.setProperty('--font-weight-base', '400');
+                } else if (value === '中等') {
+                    root.style.setProperty('--font-weight-base', '500');
+                } else if (value === '加粗') {
+                    root.style.setProperty('--font-weight-base', '700');
+                }
+            }
+        }
+
+        // 条款勾选
+        function toggleTermsCheckbox() {
+            const checkbox = document.getElementById('termsCheckbox');
+            const termsBtn = document.getElementById('termsBtn');
+            
+            if (checkbox.classList.contains('checked')) {
+                checkbox.classList.remove('checked');
+                termsBtn.disabled = true;
+            } else {
+                checkbox.classList.add('checked');
+                termsBtn.disabled = false;
+            }
+        }
+
+        // 年龄逻辑处理
+        function handleAgeJump() {
+            if (config.age === 'under18') {
+                goToPage('pageParentVerify');
+            } else if (config.age === 'over65') {
+                // 65岁以上：调大字体+跳过激活
+                const root = document.documentElement;
+                root.style.setProperty('--font-size-base', '22px');
+                root.style.setProperty('--font-weight-base', '600');
+                goToPage('pageCompletion');
+            } else {
+                goToPage('pageTerms');
+            }
+        }
+
+        // 家长信息验证
+        function verifyParentInfo() {
+            // 模拟验证：等待5秒后跳转
+            setTimeout(() => {
+                alert('信息验证完成');
+                goToPage('pageTerms');
+            }, 5000);
+        }
+
+        // 密码+指纹逻辑
+        let fingerprintProgress = 0;
+        let fingerprintCount = 0;
+
+        function setupPassword() {
+            document.getElementById('passwordInput').style.display = 'block';
+            document.getElementById('passwordConfirm').style.display = 'block';
+            document.getElementById('passwordBtn').style.display = 'block';
+        }
+
+        function confirmPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const confirm = document.getElementById('passwordConfirm').value;
+            
+            if (!password || password.length < 6) {
+                alert('请输入至少6位密码');
+            } else if (password !== confirm) {
+                alert('两次输入的密码不匹配，请重新输入');
+            } else {
+                document.getElementById('passwordStatus').textContent = '已设置';
+                config.biometric.password = true;
+                document.getElementById('passwordInput').style.display = 'none';
+                document.getElementById('passwordConfirm').style.display = 'none';
+                document.getElementById('passwordBtn').style.display = 'none';
+                document.getElementById('fingerprintItem').style.display = 'flex';
+            }
+        }
+
+        function setupFingerprint() {
+            const fingerprintIcon = document.querySelector('#fingerprintItem .biometric-icon');
+            const fingerprintProgressBar = document.getElementById('fingerprintProgress');
+            const fingerprintStatus = document.getElementById('fingerprintStatus');
+            
+            fingerprintIcon.classList.add('active');
+            fingerprintCount++;
+            fingerprintProgress += 20;
+            fingerprintProgressBar.style.width = `${fingerprintProgress}%`;
+            
+            if (fingerprintCount >= 5) {
+                fingerprintStatus.textContent = '已设置';
+                config.biometric.fingerprint = true;
+                setTimeout(() => {
+                    goToPage('pageWiFi');
+                }, 800);
+            } else {
+                fingerprintStatus.textContent = `已录入 ${fingerprintCount}/5 次`;
+            }
+        }
+
+        function skipPassword() {
+            goToPage('pageWiFi');
+        }
+
+        // WiFi逻辑
+        function showWiFiPassword() {
+            document.getElementById('wifiPassword').style.display = 'block';
+        }
+
+        function skipWiFi() {
+            goToPage('pageDeepsea');
+        }
+
+        function connectWiFi() {
+            alert('Wi-Fi连接成功！');
+            goToPage('pageDeepsea');
+        }
+
+        // 系统更新逻辑（修复：立即启动）
+        function startUpdate() {
+            const blackScreen = document.getElementById('blackScreen');
+            blackScreen.style.display = 'block';
+            
+            // 黑屏5秒后提示更新完成
+            setTimeout(() => {
+                blackScreen.style.display = 'none';
+                alert('Shenhai Xinghe OS 14.5已经更新完成');
+                goToPage('pageDataTransfer');
+            }, 5000);
+        }
+
+        // 数据传输逻辑
+        function handleDataTransfer() {
+            if (config.transfer === 'none') {
+                goToPage('pageWelcome');
+            } else {
+                // 模拟等待5秒后开始传输
+                setTimeout(() => {
+                    goToPage('pageTransferAnimation');
+                    // 15秒后自动跳转
+                    setTimeout(() => {
+                        goToPage('pageWelcome');
+                    }, 15000);
+                }, 5000);
+            }
+        }
+
+        // 个性化欢迎语
+        function setWelcomeText() {
+            const account = document.getElementById('accountInput').value || '用户';
+            document.getElementById('welcomeText').textContent = `欢迎${account}加入星河生态`;
+        }
+
+        // 账户逻辑
+        function login() {
+            const acc = document.getElementById('accountInput').value.trim();
+            const pwd = document.getElementById('pwdInput').value.trim();
+            if (acc && pwd) {
+                config.account = { username: acc, type: 'login' };
+                setWelcomeText();
+                alert('登录成功！');
+                goToPage('pageESIM');
+            } else {
+                alert('请输入用户名和密码');
+            }
+        }
+
+        function register() {
+            const acc = document.getElementById('accountInput').value.trim();
+            const pwd = document.getElementById('pwdInput').value.trim();
+            if (acc && pwd) {
+                config.account = { username: acc, type: 'register' };
+                setWelcomeText();
+                alert('注册成功！');
+                goToPage('pageESIM');
+            } else {
+                alert('请输入用户名和密码');
+            }
+        }
+
+        function developerLogin() {
+            document.getElementById('accountInput').value = 'Shenhai Developer';
+            document.getElementById('pwdInput').value = 'Shenhai2024.6.12';
+            config.account = { username: 'Shenhai Developer', type: 'developer' };
+            alert('开发者账号已填充');
+        }
+
+        // eSIM激活
+        function activateESIM() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === '661543') {
+                goToPage('pageESIMAnimation');
+                setTimeout(() => {
+                    goToPage('pageSafety');
+                }, 10000);
+            } else {
+                alert('PIN码错误，请重试');
+            }
+        }
+
+        // 重新激活
+        function resetActivation() {
+            if (confirm('确定要重新激活设备吗？所有设置将被重置。')) {
+                // 重置配置
+                for (let key in config) {
+                    if (key === 'biometric') {
+                        config[key] = { password: false, fingerprint: false };
+                    } else {
+                        config[key] = null;
+                    }
+                }
+                
+                // 重置UI
+                document.querySelectorAll('.option-item.selected').forEach(item => item.classList.remove('selected'));
+                document.querySelectorAll('.option-card.active').forEach((card, index) => index !== 0 && card.classList.remove('active'));
+                document.getElementById('termsCheckbox').classList.remove('checked');
+                document.getElementById('termsBtn').disabled = true;
+                document.getElementById('passwordStatus').textContent = '未设置';
+                document.getElementById('fingerprintItem').style.display = 'none';
+                fingerprintCount = 0;
+                fingerprintProgress = 0;
+                document.getElementById('fingerprintProgress').style.width = '0%';
+                document.getElementById('fingerprintStatus').textContent = '未设置';
+                document.body.classList.remove('dark-mode');
+                const root = document.documentElement;
+                root.style.setProperty('--font-size-base', '16px');
+                root.style.setProperty('--font-weight-base', '400');
+                
+                // 重置按钮状态
+                document.getElementById('langBtn').disabled = true;
+                document.getElementById('regionBtn').disabled = true;
+                document.getElementById('ageBtn').disabled = true;
+                document.getElementById('transferBtn').disabled = true;
+                
+                // 回到初始页
+                goToPage('pageHello');
+            }
+        }
+    </script>
+</body>
+</html>
